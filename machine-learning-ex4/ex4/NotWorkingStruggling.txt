@@ -1,0 +1,56 @@
+
+%X is 5000X400
+
+%input layer
+a1=[ones(m,1), X]; %5000 examples, resulting in 5000x401, 401 units
+
+
+%Hidden layer
+%theta1 25x401,
+z2=a1*Theta1';%theta1 25x401, resulting in 5000x25
+a2=sigmoid(z2);%25units 5000X25
+a2=[ones(m,1),a2]; %Make 5000x26
+
+%output layer
+z3=a2*Theta2';%5000x26 * theta2 10x26
+a3=sigmoid(z3); %5000X10, 10 output units
+
+h=a3; %5000X10 
+
+%cost, for 5000 set training, for 10 labels. 
+
+
+J=1/m*sum(-y.*log(h)-(1-y).*log(1-h)); % +lambda/2/m*sum(theta(2:end).^2); sum(5000x10),across 5000 cases along the vertical, resulting in 1X10. 
+
+
+for t=1:m
+
+%row vector format
+  %input layer
+  a1=X(t,:); %X=5000x400. a1=1x400
+  a1=[1 , a1]; %a1=1X401
+  %hiddel layer 
+  z2=a1*Theta1';%a1=1X401, theta1=25x401, resulting in 1x25
+  a2=sigmoid(z2); %a2=1x25
+  a2=[1 , a2]; %a2=1X26
+  %output layer 
+  z3=a2*Theta2';%a2=1X26, theta2=10x26, resulting in 
+  a3=sigmoid(z3); %a3=1x10
+ 
+ 
+  delta3=a3-y(t); %a3=1x10, delta3=1x10
+  delta2=(delta3*Theta2).*(a2.*(1-a2)); %Theta2=10x26 * delta3=1x10, a2=1x26, delta2=1x26. 
+  delta2=delta2(2:end); %Remove delta0_2, now delta2=1x25
+  
+  D2=D2+delta3'*a2; %delta3=1x10 a2=1x26 ==> %10x26 
+  D1=D1+delta2'*a1; %delta2=1x25 a1=1x401 ==>%25X401
+  
+endfor 
+
+
+
+Theta1_grad=1/m*D1;%25X401
+Theta2_grad=1/m*D2;%10x26
+
+
+
